@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity-mappings
+        xmlns="http://xmlns.jcp.org/xml/ns/persistence/orm"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/orm_2_2.xsd"
+        version="2.2">
+
+    <named-query name="RebeldeItemInventarioEntity.contabilizarPontosPerdidosPorTraidores">
+        <query>
+              SELECT SUM(quantidade * pontuacao) FROM RebeldeItemInventarioEntity rebeldeItemInventario
+              JOIN rebeldeItemInventario.rebeldeInventario inventarioRebelde
+              JOIN rebeldeItemInventario.itemInventario
+              WHERE acessivel = false
+        </query>
+    </named-query>
+
+    <named-native-query name="RebeldeItemInventarioEntity.calcularMediaRecursoPorRebelde" result-set-mapping="MediaRecursoPorRebeldeMapping">
+        <query>
+            SELECT descricao, avg(quantidade)  as media
+            FROM REBELDE_INVENTARIO  inventario
+            inner join REBELDE_ITEM_INVENTARIO item on inventario.id = item.rebelde_inventario_id
+            inner join ITEM_INVENTARIO jogo on jogo.id = item.item_inventario_id
+            where acessivel = true
+            GROUP BY descricao
+        </query>
+    </named-native-query>
+
+    <sql-result-set-mapping name="MediaRecursoPorRebeldeMapping">
+        <constructor-result target-class="br.com.marcia.starwars.domain.MediaRecursoPorRebelde">
+            <column name="descricao" class="java.lang.String"/>
+            <column name="media" class="java.lang.Double"/>
+        </constructor-result>
+    </sql-result-set-mapping>
+
+    <!--
+    <named-query name="RebeldeItemInventarioEntity.calcularMediaRecursoPorRebelde">
+        <query>
+            SELECT NEW br.com.marcia.starwars.domain.MediaRecursoPorRebelde(descricao, AVG(quantidade) AS media)
+            FROM RebeldeItemInventarioEntity rebeldeItemInventario
+            JOIN rebeldeItemInventario.rebeldeInventario inventarioRebelde
+            JOIN rebeldeItemInventario.itemInventario
+            WHERE acessivel = true
+            GROUP BY descricao
+        </query>
+    </named-query>
+    -->
+</entity-mappings>
