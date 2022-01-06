@@ -7,7 +7,7 @@ import br.com.marcia.starwars.api.v1.controller.builder.RebeldeResponseBuilder;
 import br.com.marcia.starwars.api.v1.request.RebeldeCriarRequest;
 import br.com.marcia.starwars.api.v1.response.RebeldeResponse;
 import br.com.marcia.starwars.domain.Rebelde;
-import br.com.marcia.starwars.exception.IdItemInventarioNaoEncontradoException;
+import br.com.marcia.starwars.exception.IdItemInventarioInvalidoException;
 import br.com.marcia.starwars.service.RebeldeService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -88,7 +88,7 @@ public class RebeldeControllerTest {
         RebeldeCriarRequest rebeldeCriarRequest = RebeldeCriarRequestBuilder.builder().build().toRebeldeCriarRequest();
         Rebelde rebelde = RebeldeBuilder.builder().build().toRebelde();
 
-        when(rebeldeService.cadastrar(any(Rebelde.class), any(Map.class))).thenThrow(IdItemInventarioNaoEncontradoException.class);
+        when(rebeldeService.cadastrar(any(Rebelde.class), any(Map.class))).thenThrow(IdItemInventarioInvalidoException.class);
         when(objectMapper.convertValue(any(RebeldeCriarRequest.class), eq(Rebelde.class))).thenReturn(rebelde);
 
         mockMvc.perform(post(REBELDES_API_URL_PATH)

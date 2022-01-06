@@ -5,7 +5,7 @@ import br.com.marcia.starwars.domain.Rebelde;
 import br.com.marcia.starwars.domain.RebeldeInventario;
 import br.com.marcia.starwars.domain.RebeldeItemInventario;
 import br.com.marcia.starwars.entity.RebeldeEntity;
-import br.com.marcia.starwars.exception.IdItemInventarioNaoEncontradoException;
+import br.com.marcia.starwars.exception.IdItemInventarioInvalidoException;
 import br.com.marcia.starwars.exception.RebeldeNaoEncontradoException;
 import br.com.marcia.starwars.repository.RebeldeRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -64,7 +64,7 @@ public class RebeldeService {
 
                 log.error(String.format("Não existe item de inventário com id %d", id));
 
-                throw new IdItemInventarioNaoEncontradoException(
+                throw new IdItemInventarioInvalidoException(
                         String.format("Não existe item de inventário com id %d", id));
             }
         });
@@ -107,8 +107,15 @@ public class RebeldeService {
     }
 
     public Rebelde atualizar(Rebelde rebelde) {
+
+        Rebelde rebeldeExistente = buscar(rebelde.getId());
+
+        rebeldeExistente.setLatitude(rebelde.getLatitude());
+        rebeldeExistente.setLongitude(rebelde.getLongitude());
+        rebeldeExistente.setNomeBaseGalaxia(rebelde.getNomeBaseGalaxia());
+
         RebeldeEntity rebeldeAtualizado = rebeldeRepository.save(
-                objectMapper.convertValue(rebelde, RebeldeEntity.class));
+                objectMapper.convertValue(rebeldeExistente, RebeldeEntity.class));
 
         return objectMapper.convertValue(rebeldeAtualizado, Rebelde.class);
     }

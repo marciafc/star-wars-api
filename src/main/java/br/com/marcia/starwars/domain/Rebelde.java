@@ -2,6 +2,7 @@ package br.com.marcia.starwars.domain;
 
 import br.com.marcia.starwars.enumeration.GeneroEnum;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -10,6 +11,7 @@ import java.util.Set;
 
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Data
 public class Rebelde {
 

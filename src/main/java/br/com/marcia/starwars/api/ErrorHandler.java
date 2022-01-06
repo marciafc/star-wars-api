@@ -1,5 +1,6 @@
 package br.com.marcia.starwars.api;
 
+import br.com.marcia.starwars.exception.IdItemInventarioInvalidoException;
 import br.com.marcia.starwars.exception.IdNaoEncontradoException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -24,9 +25,16 @@ public class ErrorHandler {
     private final String BAD_REQUEST_MESSAGE = "Requisição inválida.";
     private final String INTERNAL_SERVER_ERROR_MESSAGE = "Ocorreu um erro no servidor.";
 
-    @ResponseStatus(code = HttpStatus.BAD_REQUEST)
+    @ResponseStatus(code = HttpStatus.NOT_FOUND)
     @ExceptionHandler(IdNaoEncontradoException.class)
     public ErrorResponse idNaoEncontradoException(IdNaoEncontradoException ex) {
+        log.info("Erro de requisição inválida.", ex);
+        return new ErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage());
+    }
+
+    @ResponseStatus(code = HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(IdItemInventarioInvalidoException.class)
+    public ErrorResponse idItemInventarioInvalidoException(IdItemInventarioInvalidoException ex) {
         log.info("Erro de requisição inválida.", ex);
         return new ErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
     }

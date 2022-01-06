@@ -4,7 +4,6 @@ import br.com.marcia.starwars.api.v1.controller.interfaces.IRebeldeControllerDoc
 import br.com.marcia.starwars.api.v1.request.*;
 import br.com.marcia.starwars.api.v1.response.RebeldeResponse;
 import br.com.marcia.starwars.domain.*;
-import br.com.marcia.starwars.exception.RebeldeNaoEncontradoException;
 import br.com.marcia.starwars.service.RebeldeService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
@@ -44,21 +43,20 @@ public class RebeldeController implements IRebeldeControllerDocs {
     }
 
     @PatchMapping("/{id}/localizacao")
-    public ResponseEntity<Rebelde> atualizarLocalizacao(@PathVariable Long id,
-                                                        @RequestBody RebeldeLocalizacaoAtualizarRequest request) {
+    public ResponseEntity<RebeldeResponse> atualizarLocalizacao(@PathVariable Long id,
+                                                                @Valid @RequestBody RebeldeLocalizacaoAtualizarRequest request) {
+        Rebelde rebelde = Rebelde.builder()
+                .id(id)
+                .latitude(request.getLatitude())
+                .longitude(request.getLongitude())
+                .nomeBaseGalaxia(request.getNomeBaseGalaxia())
+                .build();
 
-        try {
-            Rebelde rebelde = rebeldeService.buscar(id);
+        rebelde = rebeldeService.atualizar(rebelde);
 
-            rebelde.setLatitude(request.getLatitude());
-            rebelde.setLongitude(request.getLongitude());
-            rebelde.setNomeBaseGalaxia(request.getNomeBaseGalaxia());
+        log.info("Atualizou localização do rebelde com id %d", rebelde.getId());
 
-            return ResponseEntity.ok(rebeldeService.atualizar(rebelde));
-
-        } catch (RebeldeNaoEncontradoException e) {
-            return ResponseEntity.notFound().build();
-        }
+        return ResponseEntity.ok(objectMapper.convertValue(rebelde, RebeldeResponse.class));
     }
 
     @PatchMapping("/{id}/reporte-traidor")

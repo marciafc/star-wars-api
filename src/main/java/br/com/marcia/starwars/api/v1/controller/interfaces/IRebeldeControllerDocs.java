@@ -26,7 +26,8 @@ public interface IRebeldeControllerDocs {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Localização do rebelde atualizada com sucesso")
     })
-    ResponseEntity<Rebelde> atualizarLocalizacao(@PathVariable Long id, @RequestBody RebeldeLocalizacaoAtualizarRequest request);
+    ResponseEntity<RebeldeResponse> atualizarLocalizacao(@PathVariable Long id,
+                                                         @RequestBody RebeldeLocalizacaoAtualizarRequest request);
 
     @ApiOperation(value = "Reportar um rebelde como traidor")
     @ApiResponses(value = {
