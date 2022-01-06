@@ -30,7 +30,7 @@ Essa API REST foi desenvolvolvida visando o compartilhamento de recursos entre o
     
     - Porcentagem de rebeldes. 
     
-    - Porcentagem de rebeldes.
+    - Quantidade média de cada tipo de recurso por rebelde (Ex: 2 armas por rebelde)
     
     - Pontos perdidos devido a traidores.          
 
