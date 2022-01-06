@@ -3,11 +3,14 @@ package br.com.marcia.starwars.api.v1.controller;
 import br.com.marcia.starwars.api.ErrorHandler;
 import br.com.marcia.starwars.api.v1.controller.builder.RebeldeBuilder;
 import br.com.marcia.starwars.api.v1.controller.builder.RebeldeCriarRequestBuilder;
+import br.com.marcia.starwars.api.v1.controller.builder.RebeldeLocalizacaoAtualizarRequestBuilder;
 import br.com.marcia.starwars.api.v1.controller.builder.RebeldeResponseBuilder;
 import br.com.marcia.starwars.api.v1.request.RebeldeCriarRequest;
+import br.com.marcia.starwars.api.v1.request.RebeldeLocalizacaoAtualizarRequest;
 import br.com.marcia.starwars.api.v1.response.RebeldeResponse;
 import br.com.marcia.starwars.domain.Rebelde;
 import br.com.marcia.starwars.exception.IdItemInventarioInvalidoException;
+import br.com.marcia.starwars.exception.RebeldeNaoEncontradoException;
 import br.com.marcia.starwars.service.RebeldeService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,6 +32,7 @@ import static org.hamcrest.core.Is.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -37,6 +41,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class RebeldeControllerTest {
 
     private static final String REBELDES_API_URL_PATH = "/v1/rebeldes";
+    private static final String REBELDE_API_SUBPATH_LOCALIZACAO_URL = "/localizacao";
+    private static final long REBELDE_ID_VALIDO = 1L;
+
 
     @Mock
     private RebeldeService rebeldeService;
@@ -96,5 +103,40 @@ public class RebeldeControllerTest {
                 .content(asJsonString(rebeldeCriarRequest)))
                 .andExpect(status().isBadRequest());
 
+    }
+
+    @Test
+    void whenPATCHAtualizarLocalizacaoForChamadoThenAtualizarComSucesso() throws Exception {
+
+        RebeldeLocalizacaoAtualizarRequest rebeldeLocalizacaoRequest = RebeldeLocalizacaoAtualizarRequestBuilder.
+                builder().build().toRebeldeLocalizacao();
+
+        RebeldeResponse rebeldeResponse = RebeldeResponseBuilder.builder().build().toRebeldeResponse();
+        Rebelde rebelde = RebeldeBuilder.builder().build().toRebelde();
+
+        when(rebeldeService.atualizar(any(Rebelde.class))).thenReturn(rebelde);
+        when(objectMapper.convertValue(any(Rebelde.class), eq(RebeldeResponse.class))).thenReturn(rebeldeResponse);
+
+        mockMvc.perform(patch(REBELDES_API_URL_PATH + "/" + REBELDE_ID_VALIDO + "/" + REBELDE_API_SUBPATH_LOCALIZACAO_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(rebeldeLocalizacaoRequest)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.latitude", is(rebeldeResponse.getLatitude())))
+                .andExpect(jsonPath("$.longitude", is(rebeldeResponse.getLongitude())))
+                .andExpect(jsonPath("$.nome_base_galaxia", is(rebeldeResponse.getNomeBaseGalaxia())));
+    }
+
+    @Test
+    void whenPATCHAtualizarLocalizacaoForChamadoComRebeldeInexistenteThenUmErroSeraRetornado() throws Exception {
+
+        RebeldeLocalizacaoAtualizarRequest rebeldeLocalizacaoRequest = RebeldeLocalizacaoAtualizarRequestBuilder.
+                builder().build().toRebeldeLocalizacao();
+
+        when(rebeldeService.atualizar(any(Rebelde.class))).thenThrow(RebeldeNaoEncontradoException.class);
+
+        mockMvc.perform(patch(REBELDES_API_URL_PATH + "/" + REBELDE_ID_VALIDO + "/" + REBELDE_API_SUBPATH_LOCALIZACAO_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(rebeldeLocalizacaoRequest)))
+                .andExpect(status().isNotFound());
     }
 }

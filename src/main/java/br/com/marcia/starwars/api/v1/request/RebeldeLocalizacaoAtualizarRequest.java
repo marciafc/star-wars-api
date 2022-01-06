@@ -2,11 +2,15 @@ package br.com.marcia.starwars.api.v1.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotNull;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class RebeldeLocalizacaoAtualizarRequest {
 
     @ApiModelProperty(example = "29.925597", required = true)
