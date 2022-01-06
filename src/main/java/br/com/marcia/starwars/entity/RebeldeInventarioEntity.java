@@ -19,7 +19,7 @@ public class RebeldeInventarioEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany(mappedBy = "rebeldeInventario")
+    @OneToMany(mappedBy = "rebeldeInventario", cascade = CascadeType.PERSIST)
     @JsonManagedReference
     private List<RebeldeItemInventarioEntity> itemsInventario;
 
@@ -27,7 +27,7 @@ public class RebeldeInventarioEntity {
     private Boolean acessivel;
 
     @OneToOne
-    @JoinColumn(name = "rebelde_id")
+    @JoinColumn(name = "rebelde_id", referencedColumnName = "id")
     @JsonBackReference
     private RebeldeEntity rebelde;
 }

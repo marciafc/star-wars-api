@@ -6,5 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface RebeldeInventarioRepository extends JpaRepository<RebeldeInventarioEntity, Long> {
+
     RebeldeInventarioEntity findByRebeldeId(Long rebeldeId);
 }

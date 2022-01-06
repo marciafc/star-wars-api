@@ -4,6 +4,7 @@ import br.com.marcia.starwars.api.v1.request.RebeldeCriarRequest;
 import br.com.marcia.starwars.api.v1.request.RebeldeIdRequest;
 import br.com.marcia.starwars.api.v1.request.RebeldeItemInventarioNegociarRequest;
 import br.com.marcia.starwars.api.v1.request.RebeldeLocalizacaoAtualizarRequest;
+import br.com.marcia.starwars.api.v1.response.RebeldeResponse;
 import br.com.marcia.starwars.domain.Rebelde;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -16,9 +17,10 @@ public interface IRebeldeControllerDocs {
 
     @ApiOperation(value = "Salvar um rebelde")
     @ApiResponses(value = {
-            @ApiResponse(code = 201, message = "Rebelde criado com sucesso")
+            @ApiResponse(code = 201, message = "Rebelde criado com sucesso"),
+            @ApiResponse(code = 400, message = "Campo obrigatório não preenchido ou inválido")
     })
-    ResponseEntity<Rebelde> adicionar(RebeldeCriarRequest request);
+    ResponseEntity<RebeldeResponse> adicionar(RebeldeCriarRequest request);
 
     @ApiOperation(value = "Atualizar a localização do rebelde")
     @ApiResponses(value = {

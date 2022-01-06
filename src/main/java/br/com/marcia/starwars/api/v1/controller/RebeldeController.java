@@ -1,47 +1,46 @@
 package br.com.marcia.starwars.api.v1.controller;
 
 import br.com.marcia.starwars.api.v1.controller.interfaces.IRebeldeControllerDocs;
-import br.com.marcia.starwars.api.v1.request.RebeldeCriarRequest;
-import br.com.marcia.starwars.api.v1.request.RebeldeIdRequest;
-import br.com.marcia.starwars.api.v1.request.RebeldeItemInventarioNegociarRequest;
-import br.com.marcia.starwars.api.v1.request.RebeldeLocalizacaoAtualizarRequest;
+import br.com.marcia.starwars.api.v1.request.*;
+import br.com.marcia.starwars.api.v1.response.RebeldeResponse;
 import br.com.marcia.starwars.domain.*;
 import br.com.marcia.starwars.exception.RebeldeNaoEncontradoException;
-import br.com.marcia.starwars.service.ItemInventarioService;
 import br.com.marcia.starwars.service.RebeldeService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import javax.validation.Valid;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/v1/rebeldes")
 @AllArgsConstructor
+@Slf4j
 public class RebeldeController implements IRebeldeControllerDocs {
 
     private final RebeldeService rebeldeService;
 
-    private final ItemInventarioService itemInventarioService;
-
     private final ObjectMapper objectMapper;
 
     @PostMapping
-    public ResponseEntity<Rebelde> adicionar(@RequestBody RebeldeCriarRequest request) {
+    public ResponseEntity<RebeldeResponse> adicionar(@Valid @RequestBody RebeldeCriarRequest request) {
 
         Rebelde rebelde = objectMapper.convertValue(request, Rebelde.class);
 
-        /*Map<Long, Long> map = request.getItensInventario().stream().
-                collect(Collectors.toMap(RebeldeItemInventarioRequest::getId, RebeldeItemInventarioRequest::getQuantidade));*/
+        Map<Long, Long> idQuantidadeItens = request.getItensInventario().stream().
+                collect(Collectors.toMap(RebeldeItemInventarioRequest::getId, RebeldeItemInventarioRequest::getQuantidade));
 
-        Rebelde rebeldeSalvo = rebeldeService.cadastrar(rebelde);
+        Rebelde rebeldeSalvo = rebeldeService.cadastrar(rebelde, idQuantidadeItens);
+
+        log.info("Salvou rebelde com id %d", rebelde.getId());
 
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(rebeldeSalvo);
+                .body(objectMapper.convertValue(rebeldeSalvo, RebeldeResponse.class));
     }
 
     @PatchMapping("/{id}/localizacao")
@@ -72,22 +71,5 @@ public class RebeldeController implements IRebeldeControllerDocs {
                                                  @RequestBody RebeldeItemInventarioNegociarRequest request) {
 
         return ResponseEntity.notFound().build();
-    }
-
-    private void prepararSalvarItens(Rebelde rebelde, Map<Long, Long> map) {
-
-        List<ItemInventario> lista = itemInventarioService.listar();
-        List<RebeldeItemInventario> rebeldeItem = new ArrayList<>();
-
-        // TODO refatorar (e fazer para a lista toda)
-        RebeldeItemInventario build = RebeldeItemInventario.builder().
-                itemInventario(lista.get(0)).
-                quantidade(map.get(lista.get(0).getId())).
-                build();
-
-        rebeldeItem.add(build);
-        RebeldeInventario rebeldeInventario = RebeldeInventario.builder().build();
-        rebelde.setRebeldeInventario(rebeldeInventario);
-        rebelde.getRebeldeInventario().setItemsInventario(rebeldeItem);
     }
 }

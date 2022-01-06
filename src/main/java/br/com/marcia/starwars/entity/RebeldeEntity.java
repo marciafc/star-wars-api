@@ -1,6 +1,7 @@
 package br.com.marcia.starwars.entity;
 
 import br.com.marcia.starwars.enumeration.GeneroEnum;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -42,6 +43,10 @@ public class RebeldeEntity {
 
     @Column(nullable = false)
     private Boolean traidor;
+
+    @OneToOne(mappedBy = "rebelde", cascade = CascadeType.PERSIST)
+    @JsonManagedReference
+    private RebeldeInventarioEntity rebeldeInventario;
 
     @ManyToMany
     @JoinTable(name = "reporte_rebelde_traidor",
