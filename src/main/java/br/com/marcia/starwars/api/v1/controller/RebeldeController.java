@@ -4,6 +4,7 @@ import br.com.marcia.starwars.api.v1.controller.interfaces.IRebeldeControllerDoc
 import br.com.marcia.starwars.api.v1.request.*;
 import br.com.marcia.starwars.api.v1.response.RebeldeResponse;
 import br.com.marcia.starwars.domain.*;
+import br.com.marcia.starwars.service.RebeldeItemInventarioNegociacaoService;
 import br.com.marcia.starwars.service.RebeldeService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
@@ -23,6 +24,8 @@ import java.util.stream.Collectors;
 public class RebeldeController implements IRebeldeControllerDocs {
 
     private final RebeldeService rebeldeService;
+
+    private final RebeldeItemInventarioNegociacaoService negociacaoService;
 
     private final ObjectMapper objectMapper;
 
@@ -73,8 +76,13 @@ public class RebeldeController implements IRebeldeControllerDocs {
 
     @PatchMapping("/{id}/negociar-itens")
     public ResponseEntity<Rebelde> negociarItens(@PathVariable Long id,
-                                                 @RequestBody RebeldeItemInventarioNegociarRequest request) {
+                                                 @Valid @RequestBody RebeldeItemInventarioNegociarRequest request) {
 
-        return ResponseEntity.notFound().build();
+        negociacaoService.negociarItens(id, objectMapper.convertValue(request, RebeldeItemInventarioNegociar.class));
+
+        log.info("Negociação de itens realizada com sucesso entre os rebeldes com id %d e %d ",
+                id, request.getRebeldeIdDestino());
+
+        return ResponseEntity.ok().build();
     }
 }

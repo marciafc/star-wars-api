@@ -1,9 +1,6 @@
 package br.com.marcia.starwars.service;
 
-import br.com.marcia.starwars.domain.RebeldeInventario;
-import br.com.marcia.starwars.entity.RebeldeInventarioEntity;
 import br.com.marcia.starwars.repository.RebeldeInventarioRepository;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +10,7 @@ public class RebeldeInventarioService {
 
     private final RebeldeInventarioRepository rebeldeInventarioRepository;
 
+    /*
     private final ObjectMapper objectMapper;
 
     public RebeldeInventario salvar(RebeldeInventario rebeldeInventario) {
@@ -26,10 +24,10 @@ public class RebeldeInventarioService {
     }
 
     public RebeldeInventario buscarPorRebeldeId(Long rebeldeId) {
-        RebeldeInventarioEntity rebeldeInventarioEntity = rebeldeInventarioRepository.findByRebeldeId(rebeldeId);/*.
+        RebeldeInventarioEntity rebeldeInventarioEntity = rebeldeInventarioRepository.findByRebeldeId(rebeldeId);*//*.
                 orElseThrow(() -> new RebeldeNaoEncontradoException(//TODO outra exception
-                        String.format("Não existe rebelde com id %d", rebeldeId)));*/
+                        String.format("Não existe rebelde com id %d", rebeldeId)));*//*
 
         return objectMapper.convertValue(rebeldeInventarioEntity, RebeldeInventario.class);
-    }
+    }*/
 }

@@ -1,6 +1,6 @@
 package br.com.marcia.starwars.api;
 
-import br.com.marcia.starwars.exception.ValorInvalidoException;
+import br.com.marcia.starwars.exception.BusinessException;
 import br.com.marcia.starwars.exception.IdNaoEncontradoException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -33,8 +33,8 @@ public class ErrorHandler {
     }
 
     @ResponseStatus(code = HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(ValorInvalidoException.class)
-    public ErrorResponse idItemInventarioInvalidoException(ValorInvalidoException ex) {
+    @ExceptionHandler(BusinessException.class)
+    public ErrorResponse handleBusinessException(BusinessException ex) {
         log.info("Erro de requisição inválida.", ex);
         return new ErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
     }

@@ -1,9 +1,6 @@
 package br.com.marcia.starwars.service;
 
-import br.com.marcia.starwars.domain.ItemInventario;
-import br.com.marcia.starwars.domain.Rebelde;
-import br.com.marcia.starwars.domain.RebeldeInventario;
-import br.com.marcia.starwars.domain.RebeldeItemInventario;
+import br.com.marcia.starwars.domain.*;
 import br.com.marcia.starwars.entity.RebeldeEntity;
 import br.com.marcia.starwars.exception.ValorInvalidoException;
 import br.com.marcia.starwars.exception.RebeldeNaoEncontradoException;
@@ -52,48 +49,6 @@ public class RebeldeService {
         rebelde = objectMapper.convertValue(rebeldeRepository.save(rebeldeEntity), Rebelde.class);
 
         return rebelde;
-    }
-
-    private void validarRebeldeItemInventario(List<ItemInventario> items, Map<Long, Long> idQuantidadeItens) {
-        idQuantidadeItens.forEach((id, quantidade) -> {
-
-            if(!items.stream().
-                    filter(i -> i.getId() == id).findFirst().isPresent()) {
-
-                log.error(String.format("Não existe item de inventário com id %d", id));
-
-                throw new ValorInvalidoException(
-                        String.format("Não existe item de inventário com id %d", id));
-            }
-        });
-    }
-
-    private Rebelde preencherRebeldeInventario(List<ItemInventario> items, Map<Long, Long> idQuantidadeItens, Rebelde rebelde) {
-        RebeldeInventario rebeldeInventario = RebeldeInventario.builder().
-                acessivel(Boolean.TRUE).
-                itemsInventario(criarListaRebeldeItem(items, idQuantidadeItens)).
-                build();
-        rebelde.setRebeldeInventario(rebeldeInventario);
-
-        return rebelde;
-    }
-
-    private List<RebeldeItemInventario> criarListaRebeldeItem(List<ItemInventario> items, Map<Long, Long> idQuantidadeItens) {
-        List<RebeldeItemInventario> itensRebelde = new ArrayList<>();
-
-        items.forEach((item) -> {
-
-            Long quantidade = idQuantidadeItens.get(item.getId());
-
-            RebeldeItemInventario rebeldeItem = RebeldeItemInventario.builder().
-                    itemInventario(item).
-                    quantidade(quantidade != null ? quantidade : 0)
-                    .build();
-
-            itensRebelde.add(rebeldeItem);
-        });
-
-        return itensRebelde;
     }
 
     public Rebelde buscar(Long id) {
@@ -153,6 +108,7 @@ public class RebeldeService {
                 objectMapper.convertValue(rebeldeTraidor, RebeldeEntity.class));
 
     }
+
     /**
      * Atualiza o rebelde como traidor, se alcançou o número máximo de reporte de traições;
      * Ao ser caracterizado como traidor, seus itens de inventário se tornam inacessíveis.
@@ -169,5 +125,47 @@ public class RebeldeService {
             return rebeldeRepository.save(rebeldeTraidorEntity);
         }
         return rebeldeTraidorEntity;
+    }
+
+    private void validarRebeldeItemInventario(List<ItemInventario> items, Map<Long, Long> idQuantidadeItens) {
+        idQuantidadeItens.forEach((id, quantidade) -> {
+
+            if(!items.stream().
+                    filter(i -> i.getId() == id).findFirst().isPresent()) {
+
+                log.error(String.format("Não existe item de inventário com id %d", id));
+
+                throw new ValorInvalidoException(
+                        String.format("Não existe item de inventário com id %d", id));
+            }
+        });
+    }
+
+    private Rebelde preencherRebeldeInventario(List<ItemInventario> items, Map<Long, Long> idQuantidadeItens, Rebelde rebelde) {
+        RebeldeInventario rebeldeInventario = RebeldeInventario.builder().
+                acessivel(Boolean.TRUE).
+                itemsInventario(criarListaRebeldeItem(items, idQuantidadeItens)).
+                build();
+        rebelde.setRebeldeInventario(rebeldeInventario);
+
+        return rebelde;
+    }
+
+    private List<RebeldeItemInventario> criarListaRebeldeItem(List<ItemInventario> items, Map<Long, Long> idQuantidadeItens) {
+        List<RebeldeItemInventario> itensRebelde = new ArrayList<>();
+
+        items.forEach((item) -> {
+
+            Long quantidade = idQuantidadeItens.get(item.getId());
+
+            RebeldeItemInventario rebeldeItem = RebeldeItemInventario.builder().
+                    itemInventario(item).
+                    quantidade(quantidade != null ? quantidade : 0)
+                    .build();
+
+            itensRebelde.add(rebeldeItem);
+        });
+
+        return itensRebelde;
     }
 }

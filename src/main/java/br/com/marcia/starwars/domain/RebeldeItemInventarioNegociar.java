@@ -1,6 +1,5 @@
 package br.com.marcia.starwars.domain;
 
-import br.com.marcia.starwars.api.v1.request.RebeldeItemInventarioRequest;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,9 +13,9 @@ import java.util.List;
 @Builder
 public class RebeldeItemInventarioNegociar {
 
-    private List<RebeldeItemInventarioRequest> rebeldeOrigemItems;
+    private List<RebeldeItemInventario> rebeldeOrigemItems;
 
-    private List<RebeldeItemInventarioRequest> rebeldeDestinoItems;
+    private List<RebeldeItemInventario> rebeldeDestinoItems;
 
     private Long rebeldeIdDestino;
 }

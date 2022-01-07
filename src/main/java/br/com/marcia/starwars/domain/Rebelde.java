@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.HashSet;
 import java.util.Set;
 
 @AllArgsConstructor
@@ -33,5 +32,5 @@ public class Rebelde {
 
     private RebeldeInventario rebeldeInventario;
 
-    private Set<Rebelde> reporteTraicoes = new HashSet<>();
+    private Set<Rebelde> reporteTraicoes;
 }
