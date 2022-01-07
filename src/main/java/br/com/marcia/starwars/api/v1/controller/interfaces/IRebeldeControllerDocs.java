@@ -24,7 +24,8 @@ public interface IRebeldeControllerDocs {
 
     @ApiOperation(value = "Atualizar a localização do rebelde")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Localização do rebelde atualizada com sucesso")
+            @ApiResponse(code = 200, message = "Localização do rebelde atualizada com sucesso"),
+            @ApiResponse(code = 404, message = "Rebelde não existente")
     })
     ResponseEntity<RebeldeResponse> atualizarLocalizacao(@PathVariable Long id,
                                                          @RequestBody RebeldeLocalizacaoAtualizarRequest request);
@@ -34,7 +35,7 @@ public interface IRebeldeControllerDocs {
             @ApiResponse(code = 200, message = "Reporte da traição realizada com sucesso"),
             @ApiResponse(code = 404, message = "Rebelde não existente")
     })
-    ResponseEntity<Rebelde> reportarTraicao(@PathVariable Long id, @RequestBody RebeldeIdRequest rebeldeIdRequest);
+    ResponseEntity<RebeldeResponse> reportarTraicao(@PathVariable Long id, @RequestBody RebeldeIdRequest rebeldeIdRequest);
 
     @ApiOperation(value = "Negociar item entre os rebeldes")
     @ApiResponses(value = {

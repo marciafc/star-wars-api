@@ -3,6 +3,7 @@ package br.com.marcia.starwars.entity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
@@ -13,10 +14,12 @@ import javax.persistence.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class RebeldeItemInventarioEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private Long id;
 
     @ManyToOne
@@ -26,6 +29,7 @@ public class RebeldeItemInventarioEntity {
     @ManyToOne
     @JoinColumn(name = "rebelde_inventario_id")
     @JsonBackReference
+    @EqualsAndHashCode.Include
     private RebeldeInventarioEntity rebeldeInventario;
 
     @Column(nullable = false)

@@ -27,7 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
-public class ItemInventarioBuilderControllerTest {
+public class ItemInventarioControllerTest {
 
     private static final String ITEM_INVENTARIO_API_URL_PATH = "/v1/itens-inventario";
 

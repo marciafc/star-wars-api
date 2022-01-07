@@ -52,7 +52,7 @@ public class RebeldeController implements IRebeldeControllerDocs {
                 .nomeBaseGalaxia(request.getNomeBaseGalaxia())
                 .build();
 
-        rebelde = rebeldeService.atualizar(rebelde);
+        rebelde = rebeldeService.atualizarLocalizacao(rebelde);
 
         log.info("Atualizou localização do rebelde com id %d", rebelde.getId());
 
@@ -60,8 +60,15 @@ public class RebeldeController implements IRebeldeControllerDocs {
     }
 
     @PatchMapping("/{id}/reporte-traidor")
-    public ResponseEntity<Rebelde> reportarTraicao(@PathVariable Long id, @RequestBody RebeldeIdRequest request) {
-        return ResponseEntity.ok(rebeldeService.reportarTraicao(id, request.getRebeldeId()));
+    public ResponseEntity<RebeldeResponse> reportarTraicao(@PathVariable Long id,
+                                                           @Valid @RequestBody RebeldeIdRequest request) {
+
+        RebeldeResponse rebeldeResponse = objectMapper.convertValue(
+                rebeldeService.reportarTraicao(id, request.getRebeldeId()), RebeldeResponse.class);
+
+        log.info("Reportada traição do rebelde com id %d", id);
+
+        return ResponseEntity.ok(rebeldeResponse);
     }
 
     @PatchMapping("/{id}/negociar-itens")

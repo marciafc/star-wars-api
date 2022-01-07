@@ -4,6 +4,7 @@ import br.com.marcia.starwars.enumeration.GeneroEnum;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
@@ -16,10 +17,12 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class RebeldeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private Long id;
 
     @Column(nullable = false)
@@ -39,6 +42,7 @@ public class RebeldeEntity {
     private Double longitude;
 
     @Column(nullable = false, name = "nome_base_galaxia")
+    @EqualsAndHashCode.Include
     private String nomeBaseGalaxia;
 
     @Column(nullable = false)

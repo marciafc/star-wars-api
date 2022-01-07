@@ -13,10 +13,12 @@ import javax.persistence.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class RebeldeInventarioEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private Long id;
 
     @OneToMany(mappedBy = "rebeldeInventario", cascade = CascadeType.PERSIST)
@@ -29,5 +31,6 @@ public class RebeldeInventarioEntity {
     @OneToOne
     @JoinColumn(name = "rebelde_id", referencedColumnName = "id")
     @JsonBackReference
+    @EqualsAndHashCode.Include
     private RebeldeEntity rebelde;
 }

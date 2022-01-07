@@ -5,7 +5,7 @@ import br.com.marcia.starwars.domain.Rebelde;
 import br.com.marcia.starwars.domain.RebeldeInventario;
 import br.com.marcia.starwars.domain.RebeldeItemInventario;
 import br.com.marcia.starwars.entity.RebeldeEntity;
-import br.com.marcia.starwars.exception.IdItemInventarioInvalidoException;
+import br.com.marcia.starwars.exception.ValorInvalidoException;
 import br.com.marcia.starwars.exception.RebeldeNaoEncontradoException;
 import br.com.marcia.starwars.repository.RebeldeRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -24,9 +24,7 @@ import java.util.Map;
 @Slf4j
 public class RebeldeService {
 
-    private final int NUMERO_MAXIMO_REPORTES_TRAICAO = 3;
-
-    private final RebeldeInventarioService rebeldeInventarioService;
+    private final int NUMERO_MAXIMO_REPORTE_TRAICAO = 3;
 
     private final ItemInventarioService itemInventarioService;
 
@@ -64,7 +62,7 @@ public class RebeldeService {
 
                 log.error(String.format("Não existe item de inventário com id %d", id));
 
-                throw new IdItemInventarioInvalidoException(
+                throw new ValorInvalidoException(
                         String.format("Não existe item de inventário com id %d", id));
             }
         });
@@ -106,7 +104,7 @@ public class RebeldeService {
         return objectMapper.convertValue(rebeldeEntity, Rebelde.class);
     }
 
-    public Rebelde atualizar(Rebelde rebelde) {
+    public Rebelde atualizarLocalizacao(Rebelde rebelde) {
 
         Rebelde rebeldeExistente = buscar(rebelde.getId());
 
@@ -130,31 +128,46 @@ public class RebeldeService {
 
     public Rebelde reportarTraicao(Long rebeldeTraidorId, Long rebeldeRelatorId) {
 
-        // TODO refatorar
-        // Validar se ids são existentes e diferentes um do outro
-        // Erro no terceiro reporte
-        // Se for o terceiro report, acessivel = false e traidor = true
+        Rebelde rebeldeTraidor = buscar(rebeldeTraidorId);
+
+        Rebelde rebeldeRelator;
         try {
-            Rebelde rebelde = buscar(rebeldeTraidorId);
-            Rebelde rebeldeRelator = buscar(rebeldeRelatorId);
-
-            rebelde.getReporteTraicoes().add(rebeldeRelator);
-
-            Rebelde rebeldeAtualizado = atualizar(rebelde);
-
-            if(rebelde.getReporteTraicoes().size() == NUMERO_MAXIMO_REPORTES_TRAICAO) {
-                RebeldeInventario rebeldeInventario = rebeldeInventarioService.buscarPorRebeldeId(rebelde.getId());
-                rebeldeInventario.setAcessivel(Boolean.FALSE);
-
-                rebelde.setTraidor(Boolean.TRUE);
-                rebeldeAtualizado = atualizar(rebelde);
-
-                rebeldeInventarioService.salvar(rebeldeAtualizado.getRebeldeInventario());
-            }
-            return rebeldeAtualizado;
-
-        } catch (RebeldeNaoEncontradoException rebeldeNaoEncontradoException) {
-            throw rebeldeNaoEncontradoException;
+            rebeldeRelator = buscar(rebeldeRelatorId);
+        } catch (RebeldeNaoEncontradoException exception) {
+            throw new ValorInvalidoException( String.format("Não existe rebelde com id %d", rebeldeRelatorId));
         }
+
+        if(rebeldeTraidor.getId() == rebeldeRelator.getId()) {
+            throw new ValorInvalidoException("Os ids são iguais, impossível realizar o reporte da traição");
+        }
+
+        RebeldeEntity rebeldeTraidorEntity = salvarReporteTraicao(rebeldeTraidor, rebeldeRelator);
+        rebeldeTraidorEntity = atualizarRebeldeComoTraidor(rebeldeTraidorEntity);
+
+        return objectMapper.convertValue(rebeldeTraidorEntity, Rebelde.class);
+    }
+
+    private RebeldeEntity salvarReporteTraicao(Rebelde rebeldeTraidor, Rebelde rebeldeRelator) {
+        rebeldeTraidor.getReporteTraicoes().add(rebeldeRelator);
+        return rebeldeRepository.save(
+                objectMapper.convertValue(rebeldeTraidor, RebeldeEntity.class));
+
+    }
+    /**
+     * Atualiza o rebelde como traidor, se alcançou o número máximo de reporte de traições;
+     * Ao ser caracterizado como traidor, seus itens de inventário se tornam inacessíveis.
+     *
+     * @param rebeldeTraidorEntity
+     */
+    private RebeldeEntity atualizarRebeldeComoTraidor(RebeldeEntity rebeldeTraidorEntity) {
+
+        if(rebeldeTraidorEntity.getReporteTraicoes().size() == NUMERO_MAXIMO_REPORTE_TRAICAO) {
+
+            rebeldeTraidorEntity.getRebeldeInventario().setAcessivel(Boolean.FALSE);
+            rebeldeTraidorEntity.setTraidor(Boolean.TRUE);
+
+            return rebeldeRepository.save(rebeldeTraidorEntity);
+        }
+        return rebeldeTraidorEntity;
     }
 }

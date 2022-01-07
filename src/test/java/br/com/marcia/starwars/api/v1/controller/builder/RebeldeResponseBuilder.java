@@ -1,8 +1,8 @@
 package br.com.marcia.starwars.api.v1.controller.builder;
 
+import br.com.marcia.starwars.api.v1.response.RebeldeIdResponse;
 import br.com.marcia.starwars.api.v1.response.RebeldeInventarioResponse;
 import br.com.marcia.starwars.api.v1.response.RebeldeResponse;
-import br.com.marcia.starwars.domain.Rebelde;
 import br.com.marcia.starwars.enumeration.GeneroEnum;
 import lombok.Builder;
 
@@ -40,7 +40,7 @@ public class RebeldeResponseBuilder {
     private RebeldeInventarioResponse rebeldeInventarioResponse = RebeldeInventarioResponseBuilder.builder().build().toRebeldeInventarioResponse();
 
     @Builder.Default
-    private Set<Rebelde> reporteTraicoes = new HashSet<>();
+    private Set<RebeldeIdResponse> reporteTraicoes = new HashSet<>();
 
     public RebeldeResponse toRebeldeResponse() {
         return new RebeldeResponse(id,

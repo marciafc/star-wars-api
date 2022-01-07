@@ -1,6 +1,5 @@
 package br.com.marcia.starwars.api.v1.response;
 
-import br.com.marcia.starwars.domain.Rebelde;
 import br.com.marcia.starwars.enumeration.GeneroEnum;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -35,5 +34,5 @@ public class RebeldeResponse {
     private RebeldeInventarioResponse rebeldeInventario;
 
     @JsonProperty("reporte_traicoes")
-    private Set<Rebelde> reporteTraicoes;
+    private Set<RebeldeIdResponse> reporteTraicoes;
 }
