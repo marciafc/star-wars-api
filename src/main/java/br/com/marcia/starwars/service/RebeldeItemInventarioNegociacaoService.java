@@ -1,20 +1,16 @@
 package br.com.marcia.starwars.service;
 
-import br.com.marcia.starwars.domain.Rebelde;
-import br.com.marcia.starwars.domain.RebeldeInventario;
-import br.com.marcia.starwars.domain.RebeldeItemInventario;
-import br.com.marcia.starwars.domain.RebeldeItemInventarioNegociar;
+import br.com.marcia.starwars.domain.*;
 import br.com.marcia.starwars.exception.RebeldeInventarioNaoAcessivelException;
 import br.com.marcia.starwars.exception.RebeldeNaoEncontradoException;
 import br.com.marcia.starwars.exception.TrocaInvalidaItemRebeldeException;
 import br.com.marcia.starwars.exception.ValorInvalidoException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -23,35 +19,88 @@ public class RebeldeItemInventarioNegociacaoService {
 
     private final RebeldeService rebeldeService;
 
-    public Rebelde negociarItens(Long rebeldeIdOrigem, RebeldeItemInventarioNegociar itensNegociar) {
+    private final ObjectMapper objectMapper;
+
+    @Transactional
+    public List<Rebelde> negociarItens(Long rebeldeIdOrigem, RebeldeItemInventarioNegociar itensNegociar) {
 
         Rebelde rebeldeOrigem = rebeldeService.buscar(rebeldeIdOrigem);
+        Rebelde rebeldeDestino = validarRebeldeDestino(itensNegociar.getRebeldeIdDestino());
 
+        validarTrocaItens(itensNegociar, rebeldeOrigem, rebeldeDestino);
+        realizarTrocaItens(itensNegociar, rebeldeOrigem, rebeldeDestino);
+
+        rebeldeOrigem = rebeldeService.salvar(objectMapper.convertValue(rebeldeOrigem, Rebelde.class));
+        rebeldeDestino = rebeldeService.salvar(objectMapper.convertValue(rebeldeDestino, Rebelde.class));
+
+        return List.of(rebeldeOrigem, rebeldeDestino);
+    }
+
+    private Rebelde validarRebeldeDestino(Long id) {
         Rebelde rebeldeDestino;
         try {
-            rebeldeDestino = rebeldeService.buscar(itensNegociar.getRebeldeIdDestino());
+            rebeldeDestino = rebeldeService.buscar(id);
         } catch (RebeldeNaoEncontradoException exception) {
-            throw new ValorInvalidoException( String.format("Não existe rebelde com id %d", itensNegociar.getRebeldeIdDestino()));
+            throw new ValorInvalidoException(String.format("Não existe rebelde com id %d", id));
         }
+        return rebeldeDestino;
+    }
 
-        RebeldeInventario inventarioOrigem = rebeldeOrigem.getRebeldeInventario();
-        RebeldeInventario inventarioDestino = rebeldeDestino.getRebeldeInventario();
+    private void realizarTrocaItens(RebeldeItemInventarioNegociar itensNegociar,
+                                    Rebelde rebeldeOrigem,
+                                    Rebelde rebeldeDestino) {
 
-        validarInventariosSeAcessiveis(inventarioOrigem, inventarioDestino, rebeldeOrigem.getId(), rebeldeDestino.getId());
-        validarTrocaItens(itensNegociar, rebeldeOrigem, rebeldeDestino);
+        // decrementar dos itens do rebelde ORIGEM, os itens que irá entregar e incrementar os itens recebidos
+        decrementarQuantidadeItem(itensNegociar.getRebeldeOrigemItems(), rebeldeOrigem.getRebeldeInventario());
+        incrementarQuantidadeItem(itensNegociar.getRebeldeDestinoItems(), rebeldeOrigem.getRebeldeInventario());
 
-        return new Rebelde();
+        // decrementar dos itens do rebelde DESTINO, os itens que irá entregar e incrementar os itens recebidos
+        decrementarQuantidadeItem(itensNegociar.getRebeldeDestinoItems(), rebeldeDestino.getRebeldeInventario());
+        incrementarQuantidadeItem(itensNegociar.getRebeldeOrigemItems(), rebeldeDestino.getRebeldeInventario());
+    }
+
+    private void decrementarQuantidadeItem(List<RebeldeItemIdQuantidade> itensTroca,
+                                          RebeldeInventario rebeldeInventario) {
+
+        itensTroca.forEach(item -> {
+            Optional<RebeldeItemInventario> rebeldeItemInventario = procurarPorIdInventario(rebeldeInventario, item);
+
+            if(rebeldeItemInventario.isPresent()) {
+                rebeldeItemInventario.get().setQuantidade(rebeldeItemInventario.get().getQuantidade() - item.getQuantidade());
+            }
+
+        });
+    }
+
+    private void incrementarQuantidadeItem(List<RebeldeItemIdQuantidade> itensTroca,
+                                           RebeldeInventario rebeldeInventario) {
+
+        itensTroca.forEach(item -> {
+            Optional<RebeldeItemInventario> rebeldeItemInventario = procurarPorIdInventario(rebeldeInventario, item);
+            if(rebeldeItemInventario.isPresent()) {
+                rebeldeItemInventario.get().setQuantidade(rebeldeItemInventario.get().getQuantidade() + item.getQuantidade());
+            }
+        });
+    }
+
+    private Optional<RebeldeItemInventario> procurarPorIdInventario(RebeldeInventario rebeldeInventario, RebeldeItemIdQuantidade item) {
+
+        return rebeldeInventario.getItemsInventario().stream()
+                .filter(i -> i.getItemInventario().getId() == item.getId())
+                .findFirst();
     }
 
     private void validarTrocaItens(RebeldeItemInventarioNegociar itensNegociar,
                                    Rebelde rebeldeOrigem,
                                    Rebelde rebeldeDestino) {
 
+        validarInventariosSeAcessiveis(rebeldeOrigem, rebeldeDestino);
+
         Map<Long, Long> itensNegociarOrigem = itensNegociar.getRebeldeOrigemItems().stream().
-                collect(Collectors.toMap(RebeldeItemInventario::getId, RebeldeItemInventario::getQuantidade));
+                collect(Collectors.toMap(RebeldeItemIdQuantidade::getId, RebeldeItemIdQuantidade::getQuantidade));
 
         Map<Long, Long> itensNegociarDestino = itensNegociar.getRebeldeDestinoItems().stream().
-                collect(Collectors.toMap(RebeldeItemInventario::getId, RebeldeItemInventario::getQuantidade));
+                collect(Collectors.toMap(RebeldeItemIdQuantidade::getId, RebeldeItemIdQuantidade::getQuantidade));
 
         Map<Long, Long> pontuacaoPorItemIdOrigem = validarItemQuantidade(itensNegociarOrigem,  rebeldeOrigem);
         Map<Long, Long> pontuacaoPorItemIdDestino = validarItemQuantidade(itensNegociarDestino,  rebeldeDestino);
@@ -119,18 +168,16 @@ public class RebeldeItemInventarioNegociacaoService {
     /**
      * A troca só é permitida se ambos os rebeldes estiverem com os itens acessíveis.
      */
-    private void validarInventariosSeAcessiveis(RebeldeInventario rebeldeInventarioOrigem,
-                                                RebeldeInventario rebeldeInventarioDestino,
-                                                Long rebeldeIdOrigem,
-                                                Long rebeldeIdDestino) {
+    private void validarInventariosSeAcessiveis(Rebelde rebeldeOrigem,
+                                                Rebelde rebeldeDestino) {
 
-        if(!rebeldeInventarioOrigem.getAcessivel()) {
+        if(!rebeldeOrigem.getRebeldeInventario().getAcessivel()) {
             throw new RebeldeInventarioNaoAcessivelException(
-                    String.format("Os itens de inventário do rebelde origem %d estão inacessíveis para troca", rebeldeIdOrigem));
+                    String.format("Os itens de inventário do rebelde origem %d estão inacessíveis para troca", rebeldeOrigem.getId()));
         }
-        if(!rebeldeInventarioDestino.getAcessivel()) {
+        if(!rebeldeDestino.getRebeldeInventario().getAcessivel()) {
             throw new RebeldeInventarioNaoAcessivelException(
-                    String.format("Os itens de inventário do rebelde destino %d estão inacessíveis para troca", rebeldeIdDestino));
+                    String.format("Os itens de inventário do rebelde destino %d estão inacessíveis para troca", rebeldeDestino.getId()));
         }
     }
 }

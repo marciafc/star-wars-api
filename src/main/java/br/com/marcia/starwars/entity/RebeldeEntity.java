@@ -48,7 +48,7 @@ public class RebeldeEntity {
     @Column(nullable = false)
     private Boolean traidor;
 
-    @OneToOne(mappedBy = "rebelde", cascade = CascadeType.PERSIST)
+    @OneToOne(mappedBy = "rebelde", cascade = CascadeType.ALL)
     @JsonManagedReference
     private RebeldeInventarioEntity rebeldeInventario;
 

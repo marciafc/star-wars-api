@@ -21,7 +21,7 @@ public class RebeldeInventarioEntity {
     @EqualsAndHashCode.Include
     private Long id;
 
-    @OneToMany(mappedBy = "rebeldeInventario", cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "rebeldeInventario", cascade = CascadeType.ALL)
     @JsonManagedReference
     private List<RebeldeItemInventarioEntity> itemsInventario;
 

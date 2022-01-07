@@ -102,6 +102,11 @@ public class RebeldeService {
         return objectMapper.convertValue(rebeldeTraidorEntity, Rebelde.class);
     }
 
+    public Rebelde salvar(Rebelde rebelde) {
+        RebeldeEntity rebeldeSalvo = rebeldeRepository.save(objectMapper.convertValue(rebelde, RebeldeEntity.class));
+        return objectMapper.convertValue(rebeldeSalvo, Rebelde.class);
+
+    }
     private RebeldeEntity salvarReporteTraicao(Rebelde rebeldeTraidor, Rebelde rebeldeRelator) {
         rebeldeTraidor.getReporteTraicoes().add(rebeldeRelator);
         return rebeldeRepository.save(

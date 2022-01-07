@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -75,14 +76,16 @@ public class RebeldeController implements IRebeldeControllerDocs {
     }
 
     @PatchMapping("/{id}/negociar-itens")
-    public ResponseEntity<Rebelde> negociarItens(@PathVariable Long id,
-                                                 @Valid @RequestBody RebeldeItemInventarioNegociarRequest request) {
+    public ResponseEntity<List<RebeldeResponse>> negociarItens(@PathVariable Long id,
+                                                       @Valid @RequestBody RebeldeItemInventarioNegociarRequest request) {
 
-        negociacaoService.negociarItens(id, objectMapper.convertValue(request, RebeldeItemInventarioNegociar.class));
+        List<Rebelde> rebeldes = negociacaoService.negociarItens(id, objectMapper.convertValue(request, RebeldeItemInventarioNegociar.class));
 
         log.info("Negociação de itens realizada com sucesso entre os rebeldes com id %d e %d ",
                 id, request.getRebeldeIdDestino());
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(rebeldes.stream()
+                .map(rebelde -> objectMapper.convertValue(rebelde, RebeldeResponse.class))
+                .collect(Collectors.toList()));
     }
 }

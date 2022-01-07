@@ -13,9 +13,9 @@ import java.util.List;
 @Builder
 public class RebeldeItemInventarioNegociar {
 
-    private List<RebeldeItemInventario> rebeldeOrigemItems;
+    private List<RebeldeItemIdQuantidade> rebeldeOrigemItems;
 
-    private List<RebeldeItemInventario> rebeldeDestinoItems;
+    private List<RebeldeItemIdQuantidade> rebeldeDestinoItems;
 
     private Long rebeldeIdDestino;
 }
