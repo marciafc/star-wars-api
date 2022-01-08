@@ -34,7 +34,90 @@ Essa API REST foi desenvolvolvida visando o compartilhamento de recursos entre o
     
     - Pontos perdidos devido a traidores.          
 
-  - Consulta dos itens do inventário: quais são os itens que os rebeldes podem vir a adquirir através de negociações e respectivas pontuações.  
+  - Consulta dos itens do inventário: quais são os itens que os rebeldes podem vir a adquirir através de negociações e respectivas pontuações. 
+  
+## Exemplos de payloads para utilizar a API
+
+  - Adicionar rebelde com inventário de 10 armas. O id dos itens de inventário pode ser obtido em GET /v1/itens-inventario
+
+    ```json  
+    POST /v1/rebeldes
+    
+    {
+      "genero": "FEMININO",
+      "idade": 40,
+      "itens_inventario": [
+      {
+       "id": 1,
+       "quantidade": 10
+      }
+     ],
+     "latitude": -29.795456,
+     "longitude": -51.152127,
+     "nome": "Mariana",
+     "nomeBaseGalaxia": "República Galáctica"
+    } 
+    ```       
+    
+  - Atualizar localização do rebelde com id 1
+  
+    ```json
+    PATCH /v1/rebeldes/1/localizacao
+    
+    {
+     "latitude": 29.925597,
+     "longitude": -51.078866,
+     "nome_base_galaxia": "Nova República"
+    }    
+    ```    
+     
+  - Reportar o rebelde com id 1 como traidor. Quem está reportando a traição é o rebelde com id 2
+  
+    ```json
+    PATCH /v1/rebeldes/1/reporte-traidor
+    
+    {
+     "rebelde_id": 2
+    }               
+    ```
+        
+  - Negociação dos itens do rebelde com id 1 com o rebelde de id 2
+  
+    - O rebelde com id 1 está trocando **2 armas + 1 munição + 1 comida** com o rebelde 2 que está fornecendo **2 munições + 3 águas**
+    
+    - Cada rebelde fornecendo 12 pontos na troca 
+
+    ```json
+    PATCH /v1/rebeldes/1/negociar-itens                
+    
+    {
+      "rebeldeDestinoItems": [   
+        {
+          "id": 2,
+          "quantidade": 2
+        },
+         {
+          "id": 3,
+          "quantidade": 3
+        }
+      ],
+      "rebeldeIdDestino": 2,
+      "rebeldeOrigemItems": [
+        {
+          "id": 1,
+          "quantidade": 2
+        },
+        {
+          "id": 2,
+          "quantidade": 1
+        },
+         {
+          "id": 4,
+          "quantidade": 1
+        }
+      ]
+    }               
+    ```              
     
 ## Tecnologias     
 
