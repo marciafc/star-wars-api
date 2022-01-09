@@ -115,7 +115,7 @@ public class RebeldeService {
     }
 
     /**
-     * Atualiza o rebelde como traidor, se alcançou o número máximo de reporte de traições;
+     * Atualiza o rebelde como traidor, se alcançou o número máximo de reporte de traições.
      * Ao ser caracterizado como traidor, seus itens de inventário se tornam inacessíveis.
      *
      * @param rebeldeTraidorEntity

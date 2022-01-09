@@ -21,6 +21,4 @@ public class RebeldeItemInventarioService {
     public List<Object> calcularMediaRecursoPorRebelde() {
         return itemInventarioRepository.calcularMediaRecursoPorRebelde();
     }
-
-
 }

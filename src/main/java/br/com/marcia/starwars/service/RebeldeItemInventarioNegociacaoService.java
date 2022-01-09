@@ -109,12 +109,16 @@ public class RebeldeItemInventarioNegociacaoService {
     }
 
     /**
+     *
      * Validando se pontuação: ambos os lados deverão oferecer a mesma quantidade de pontos. Exemplo:
      *
-     *  1 arma e 1 água (1 x 4 + 1 x 2) valem 6 comidas (6 x 1) ou 2 munições (2 x 3)
+     * 1 arma e 1 água (1 x 4 + 1 x 2) valem 6 comidas (6 x 1) ou 2 munições (2 x 3)
      *
-     * @param pontuacaoPorItemIdOrigem
-     * @param pontuacaoPorItemIdDestino
+     *
+     * @param rebeldeIdOrigem id do rebelde origem
+     * @param rebeldeIdDestino id do rebelde destino
+     * @param pontuacaoPorItemIdOrigem map contendo todos os itens da troca e respectivo ponto gasto em cada um - do rebelde origem
+     * @param pontuacaoPorItemIdDestino map contendo todos os itens da troca e respectivo ponto gasto em cada um - do rebelde destino
      */
     private void validarPontuacao(Long rebeldeIdOrigem,
                                   Long rebeldeIdDestino,
@@ -135,9 +139,9 @@ public class RebeldeItemInventarioNegociacaoService {
     }
 
     /**
-     * Para cada item da lista da negociação, validar se tem o item com aquele id e possui a quantidade solicitada para troca.
+     * Para cada item do map (itens da negociação), validar se tem o item com aquele id e possui a quantidade solicitada para troca.
      *
-     * @param itensNegociar lista da negociação
+     * @param itensNegociar map com os itens da negociação
      * @param rebelde
      * @return um Map contendo como key, o id do item e no value quantos pontos gastará na troca do mesmo
      *

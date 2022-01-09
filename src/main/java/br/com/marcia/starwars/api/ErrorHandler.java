@@ -27,7 +27,7 @@ public class ErrorHandler {
 
     @ResponseStatus(code = HttpStatus.NOT_FOUND)
     @ExceptionHandler(IdNaoEncontradoException.class)
-    public ErrorResponse idNaoEncontradoException(IdNaoEncontradoException ex) {
+    public ErrorResponse handleIdNaoEncontradoException(IdNaoEncontradoException ex) {
         log.info("Erro de requisição inválida.", ex);
         return new ErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage());
     }
