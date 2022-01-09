@@ -76,8 +76,9 @@ public class RebeldeController implements IRebeldeControllerDocs {
     }
 
     @PatchMapping("/{id}/negociar-itens")
-    public ResponseEntity<List<RebeldeResponse>> negociarItens(@PathVariable Long id,
-                                                       @Valid @RequestBody RebeldeItemInventarioNegociarRequest request) {
+    public ResponseEntity<List<RebeldeResponse>> negociarItens(
+                                                        @PathVariable Long id,
+                                                        @Valid @RequestBody RebeldeItemInventarioNegociarRequest request) {
 
         List<Rebelde> rebeldes = negociacaoService.negociarItens(id, objectMapper.convertValue(request, RebeldeItemInventarioNegociar.class));
 

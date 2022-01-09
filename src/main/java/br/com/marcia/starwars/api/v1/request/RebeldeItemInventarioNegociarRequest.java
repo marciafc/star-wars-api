@@ -1,12 +1,18 @@
 package br.com.marcia.starwars.api.v1.request;
 
 import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class RebeldeItemInventarioNegociarRequest {
 
     @NotNull(message = "A lista com os itens do rebelde origem é obrigatória")
