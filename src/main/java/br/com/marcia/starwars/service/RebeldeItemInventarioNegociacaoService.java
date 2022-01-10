@@ -5,7 +5,6 @@ import br.com.marcia.starwars.exception.RebeldeInventarioNaoAcessivelException;
 import br.com.marcia.starwars.exception.RebeldeNaoEncontradoException;
 import br.com.marcia.starwars.exception.TrocaInvalidaItemRebeldeException;
 import br.com.marcia.starwars.exception.ValorInvalidoException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,8 +18,6 @@ public class RebeldeItemInventarioNegociacaoService {
 
     private final RebeldeService rebeldeService;
 
-    private final ObjectMapper objectMapper;
-
     @Transactional
     public List<Rebelde> negociarItens(Long rebeldeIdOrigem, RebeldeItemInventarioNegociar itensNegociar) {
 
@@ -30,8 +27,8 @@ public class RebeldeItemInventarioNegociacaoService {
         validarTrocaItens(itensNegociar, rebeldeOrigem, rebeldeDestino);
         realizarTrocaItens(itensNegociar, rebeldeOrigem, rebeldeDestino);
 
-        rebeldeOrigem = rebeldeService.salvar(objectMapper.convertValue(rebeldeOrigem, Rebelde.class));
-        rebeldeDestino = rebeldeService.salvar(objectMapper.convertValue(rebeldeDestino, Rebelde.class));
+        rebeldeOrigem = rebeldeService.salvar(rebeldeOrigem);
+        rebeldeDestino = rebeldeService.salvar(rebeldeDestino);
 
         return List.of(rebeldeOrigem, rebeldeDestino);
     }

@@ -1,6 +1,5 @@
 package br.com.marcia.starwars.api.v1.controller.builder;
 
-import br.com.marcia.starwars.api.v1.controller.builder.RebeldeItemInventarioRequestBuilder;
 import br.com.marcia.starwars.api.v1.request.RebeldeItemInventarioNegociarRequest;
 import br.com.marcia.starwars.api.v1.request.RebeldeItemInventarioRequest;
 import lombok.Builder;

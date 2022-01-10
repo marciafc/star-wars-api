@@ -2,7 +2,7 @@
 
 O império continua sua luta incessante de dominar a galáxia, tentando ao máximo expandir seu território e eliminar os rebeldes.
 
-Essa API REST foi desenvolvolvida visando o compartilhamento de recursos entre os rebeldes.
+Essa API REST foi desenvolvida visando o compartilhamento de recursos entre os rebeldes.
 
 ## Funcionalidades
 
